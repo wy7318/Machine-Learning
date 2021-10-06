@@ -27,3 +27,18 @@ print(dftrain.describe()) # provides summary, such as min, mean, std etc
 
 print(dftrain.age.hist(bins=20))                        #Provides histogram of age
 print(dftrain.sex.value_counts().plot(kind='barh'))     #Provides survival rate by sex
+
+#Categorical col : Column with non numeric columns
+Categorical_columns = ['sex', 'n_siblings_spouses', 'parch', 'class', 'deck', 'embark_town', 'alone']
+Numeric_Columns = ['age', 'fare']
+
+feature_columns = []
+for feature_name in Categorical_columns:
+    vocabulary = dftrain[feature_name].unique() #Find unique values from each category
+    # print(vocabulary)
+    feature_columns.append(tf.feature_column.categorical_column_with_vocabulary_list(feature_name, vocabulary))
+
+for feature_name in Numeric_Columns:
+    feature_columns.append(tf.feature_column.numeric_column(feature_name, dtype=tf.float32))
+
+print(feature_columns)
