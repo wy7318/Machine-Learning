@@ -152,5 +152,3 @@ for batch in datagen.flow(img, save_prefix='test', save_format='jpeg'):     #thi
 
 plt.show()
 
-'''Pretrained Models : Using generalized model that already exist
-Fine Tuning : We pass our own trained  images'''
