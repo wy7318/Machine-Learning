@@ -118,3 +118,39 @@ history = model.fit(train_images, train_labels, epochs=8,
 #Evaluating the Model
 test_loss, test_acc = model.evaluate(test_images, test_labels, verbose = 2)
 print(test_acc)
+
+'''Working with small Dataset
+- Data Augmentation
+'''
+
+from keras.preprocessing import image
+from keras.preprocessing.image import ImageDataGenerator
+
+#Creates a data generator object that transforms images
+datagen = ImageDataGenerator( #Allow augment our images
+    rotation_range=40,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest')
+
+#Pick an image to transform
+test_img = train_images[14] #Pick 1 arbitrary image to train
+img = image.img_to_array(test_img) #Convert image to numpy array
+img = img.reshape((1,) + img.shape) #reshape image
+
+i = 0
+
+for batch in datagen.flow(img, save_prefix='test', save_format='jpeg'):     #this loops runs forever until we break, saving images to current directory
+    plt.figure(i)
+    plot = plt.imshow(image.img_to_array(batch[0]))
+    i += 1
+    if i >4:        # show 4 images
+        break
+
+plt.show()
+
+'''Pretrained Models : Using generalized model that already exist
+Fine Tuning : We pass our own trained  images'''
