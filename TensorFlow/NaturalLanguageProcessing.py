@@ -5,6 +5,28 @@ i.e. Spellcheck, auto-complete, voice assistance
 1) Recurrent Neural Networks (RNN)
 - Sentiment Analysis
 - Character Generation
+
+Usually used to process text data. Has a loop, it start to develop analyzation of the data by recurring same layer.
+They maintain an internal memory/state of the input that was already processed. Also, RNN contain a loop and process one piece of input at a time
+
+
+a) Simple RNN Layer
+:Access & Stores only one previous output
+
+output_1   output_2    ..... output_n
+   ^   --|      ^               ^
+-------  |   -------          -------
+Layer    |->  Layer    ....    Layer
+-------      -------          -------
+  ^            ^                ^
+Input_1      input_2          input_n
+(I)           (am)           (Matt)
+
+
+
+b) LSTM (Long-Short Term Memory)
+:Can Access to any previous stage's output
+
 '''
 
 '''
@@ -38,3 +60,10 @@ text = "this is a test to see if t his test will work is is teat a a"
 bag = bag_of_words(text)
 print(bag)
 print(vocab)
+
+'''
+Word Embeddings
+- Classify or translate every word into vector
+
+Recurrent Neural
+'''
