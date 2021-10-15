@@ -132,3 +132,69 @@ history = model.fit(train_data, train_label, epochs=10, validation_split=0.2)
 
 results = model.evaluate(test_data, test_labels)
 print(results)
+
+#Making Prediction
+word_index = imdb.get_word_index()
+
+def encode_text(text):
+    tokens = keras.preprocessing.text.text_to_word_sequence(text)           #text_to_word_sequence : Make every word into tokens
+    tokens = [word_index[word] if word in word_index else 0 for word in tokens]         #Find our 'word' from 'word_index(preprocessed mapping from Keras)' and
+                                                                                        #replace with that number,
+                                                                                        #Or just put 0's.
+    return sequence.pad_sequences([tokens], MAXLEN)[0]
+
+text = "that movie was just amazing, so amazing"
+encoded = encode_text(text)
+print(encoded)
+'''
+[  0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+   0   0   0   0   0   0   0   0   0  12  17  13  40 477  35 477]
+'''
+
+def predict(text):
+    encoded_text = encode_text(text)            #Preprocess the text
+    pred = np.zeros((1,250))                    #Shape that model expect is 250 length
+    pred[0] = encoded_text
+    result = model.predict(pred)
+    print(result[0])
+
+positive_review = "That movie was so awesom! I really loved it and would watch it again because it was amazingly great"
+predict(positive_review)
+'''
+[0.85228294] <---- This means 85% chance that review is positive
+'''
+
+negative_review = "that movie sucked, I hated it and wouldn't watch it again. Was one of the worst things I've ever watched"
+predict(negative_review)
+'''
+[0.25831068] <---- This means 25% chance that review is positive
+'''
+
+
+#Decode function to decode our review
+reverse_word_index = {value: key for (key, value) in word_index.items()}        #make word to integer
+
+def decode_integers(integers):
+    PAD = 0
+    text = ""
+    for num in integers:
+        if num != PAD:
+            text += reverse_word_index[num] + " "
+
+    return text[:-1]
+
+print(decode_integers(encoded))
+
+
