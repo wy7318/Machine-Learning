@@ -134,3 +134,55 @@ RNN_UNITS = 1024
 BUFFER_SIZE = 10000
 
 data = dataset.shuffle(BUFFER_SIZE).batch(BATCH_SIZE, drop_remainder=True)
+
+#Building the Model
+def build_model(vocab_size, embedding_dim, rnn_units, batch_size):
+    model = tf.keras.Sequential([
+        tf.keras.layers.Embedding(vocab_size, embedding_dim,
+                                  batch_input_shape=[batch_size, None]),
+        tf.keras.layers.LSTM(rnn_units,
+                             return_sequences = True,
+                             stateful=True,
+                             recurrent_initializer = 'glorot_uniform'),
+        tf.keras.layers.Dense(vocab_size)
+    ])
+    return model
+
+model = build_model(VOCAB_SIZE, EMBEDDING_DIM, RNN_UNITS, BATCH_SIZE)
+model.summary()
+
+#Creating Loss Function
+for input_example_batch, target_example_batch in data.take(1):
+    example_batch_predictions = model(input_example_batch)      # Ask model for a prediction on first batch of training data
+    print(example_batch_predictions.shape, "# (batch_size, sequence_length, vocab_size)")   # print out the output shape
+
+# We can see that the prediction is an array of 64 arrays, one for each entry in the batch
+print(len(example_batch_predictions))
+print(example_batch_predictions)
+
+#Examine one prediction
+pred = example_batch_predictions[0]
+print(len(pred))
+print(pred)
+#notice this is a 2d array of length 100, where each interior array is the prediction for the next
+
+# and finally, prediction at the first timestep
+time_pred = pred[0]
+print(len(time_pred))
+print(time_pred)
+# and of course its 65 values representing the probability of each character occuring next
+
+# If we want to determine the predicted character we need to sample the output distribution (Pick a value based on probabilities)
+sampled_indices = tf.random.categorical(pred, num_samples=1)
+
+#now we can reshape that array and convert all the integers to numbers to see the actual characters
+sampled_indices = np.reshape(sampled_indices, (1, -1))[0]
+predicted_chars = int_to_text(sampled_indices)
+
+predicted_chars     # and this is what the model predicted for training sequence 1
+
+def loss(labels, logits):
+    return tf.keras.losses.sparse_categorical_crossentropy(labels, logits, from_logits=True)
+
+#Compile Model
+model.compile(optimizer = 'adam', loss=loss)
