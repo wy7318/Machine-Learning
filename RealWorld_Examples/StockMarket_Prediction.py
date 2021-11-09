@@ -4,14 +4,17 @@ import math
 import pandas_datareader as web
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import Dense, LSTM
 import matplotlib.pyplot as plt
+keras = tf.keras
+
 plt.style.use('fivethirtyeight')
 
 #Get the stock quote
-df = web.DataReader('TSLA', data_source='yahoo', start = '2012-01-01', end='2021-10-10')
+df = web.DataReader('TSLA', data_source='yahoo', start = '2020-01-01', end='2021-10-25')
 print(df)
 
 # Get the number of rows & columns in the dataset
@@ -78,9 +81,11 @@ model.add(Dense(1))
 
 # Compile the model
 model.compile(optimizer='adam', loss='mean_squared_error')                          # Loss function is to determine how well the model did
+model.save("specific.h5")
 
+newModel = tf.keras.models.load_model('specific.h5')                                #Saving Model
 # Train the model
-model.fit(x_train, y_train, batch_size=1, epochs=1)
+newModel.fit(x_train, y_train, batch_size=1, epochs=2)
 
 # Create the testing data set
 # Create a new array containing scaled values
@@ -100,7 +105,7 @@ x_test = np.array(x_test)
 x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
 # Get the models predicted price values
-predictions = model.predict(x_test)
+predictions = newModel.predict(x_test)
 predictions = scaler.inverse_transform(predictions)     # Un-scaling value
 print(predictions)
 
@@ -124,10 +129,8 @@ plt.show()
 # Show the valid and predicted prices
 print(valid)
 
-'''
-Apply model and predict the next day
-'''
-tesla_quote = web.DataReader('TSLA', data_source='yahoo', start = '2012-01-01', end = '2021-10-18')
+#Get the quote
+tesla_quote = web.DataReader('TSLA', data_source='yahoo', start = '2020-01-01', end = '2021-10-25')
 
 # Create a new dataframe
 new_df = tesla_quote.filter(['Close'])
@@ -144,10 +147,10 @@ X_text = np.array(X_text)
 # Reshape the data
 X_text = np.reshape(X_text, (X_text.shape[0], X_text.shape[1], 1))
 # Get the predicted scaled price
-pred_price = model.predict(X_text)
+pred_price = newModel.predict(X_text)
 #undo the scaling
 pred_price = scaler.inverse_transform(pred_price)
-print("Predicted price for 10/19/21 : ", pred_price)
+print("Predicted price for 10/26/21 : ", pred_price)
 
 #Get the quote
 tesla_quote2 = web.DataReader('TSLA', data_source='yahoo', start = '2021-10-19', end = '2021-10-19')
