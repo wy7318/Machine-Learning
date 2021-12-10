@@ -80,3 +80,35 @@ plot('Horsepower')
 
 # Normalize
 print(train_dataset.describe().transpose()[['mean', 'std']])
+
+# Normalization
+normalizer = preprocessing.Normalization()
+# Adapt to the data
+normalizer.adapt(np.array(train_features))
+print(normalizer.mean.numpy())
+
+# When the layer is called it returns the input data, with each feature independently normalized
+# (input-mean)/stddev
+first = np.array(train_features[:1])
+print('First example:', first)
+print('Normalized:', normalizer(first).numpy())
+
+# Regression
+# 1. Normalize the input horsepower
+# 2. Apply a linear transformation (y=m*x+b) to produce 1 output using layer.Dense
+feature = 'Horsepower'
+single_feature = np.array(train_features[feature])
+print(single_feature.shape, train_features.shape)
+
+# Normalization
+single_feature_normalizer = preprocessing.Normalization()
+# Adapt to the data
+single_feature_normalizer.adapt(np.array(train_features[feature])) ## Error
+
+# Sequential model
+single_feature_model = keras.models.Sequential([
+    single_feature_normalizer,
+    layers.Dense(units=1)   # Linear Model that applies y=m*x+b
+])
+# single_feature_model.build()
+print(single_feature_model.summary())
