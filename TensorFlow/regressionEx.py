@@ -112,3 +112,45 @@ single_feature_model = keras.models.Sequential([
 ])
 # single_feature_model.build()
 print(single_feature_model.summary())
+
+# loss and optimizer
+loss = keras.losses.MeanAbsoluteError() # MeanSquaredError can be used too
+optim = keras.optimizers.Adam(lr=0.1)
+
+single_feature_model.compile(optimizer=optim, loss = loss)
+
+history = single_feature_model.fit(
+    train_features[feature], train_labels,
+    epochs = 100,
+    verbose=1,
+    # Calculate validation results on 20% of the training data
+    validation_split = 0.2)
+
+def plot_loss(history):
+    plt.plot(history.history['loss'], label='loss')
+    plt.plot(history.history['val_loss'], label='val_loss')
+    plt.ylim([0,25])
+    plt.xlabel('Epoch')
+    plt.ylabel('Error [MPG]')
+    plt.legend()
+    plt.grid(True)
+plot_loss(history)
+
+single_feature_model.evaluate(
+    test_features[feature],
+    test_labels, verbose=1
+)
+
+# predict and plot
+range_min = np.min(test_features[feature]) - 10
+range_max = np.max(test_features[feature]) + 10
+x = tf.linespace(range_min, range_max, 200)
+y = single_feature_model.predict(x)
+
+plot(feature, x, y)
+
+# DNN
+dnn_model = keras.Sequential([
+    single_feature_normalizer,
+    layers.Dense(1)
+])
