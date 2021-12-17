@@ -93,6 +93,15 @@ first = np.array(train_features[:1])
 print('First example:', first)
 print('Normalized:', normalizer(first).numpy())
 
+# feature = 'Displacement'
+# single_feature = np.array(train_features[feature])
+# print(single_feature.shape, train_features.shape)
+#
+# single_feature_normalizer = preprocessing.Normalization()
+#
+# normalizer.adapt(single_feature)
+
+
 # Regression
 # 1. Normalize the input horsepower
 # 2. Apply a linear transformation (y=m*x+b) to produce 1 output using layer.Dense
@@ -101,9 +110,9 @@ single_feature = np.array(train_features[feature])
 print(single_feature.shape, train_features.shape)
 
 # Normalization
-single_feature_normalizer = preprocessing.Normalization()
+single_feature_normalizer = layers.Normalization(input_shape=[1,], axis=None)   # Define input shape
 # Adapt to the data
-single_feature_normalizer.adapt(np.array(train_features[feature])) ## Error
+single_feature_normalizer.adapt(single_feature) ## Error
 
 # Sequential model
 single_feature_model = keras.models.Sequential([
@@ -134,6 +143,7 @@ def plot_loss(history):
     plt.ylabel('Error [MPG]')
     plt.legend()
     plt.grid(True)
+    plt.show()
 plot_loss(history)
 
 single_feature_model.evaluate(
@@ -144,7 +154,7 @@ single_feature_model.evaluate(
 # predict and plot
 range_min = np.min(test_features[feature]) - 10
 range_max = np.max(test_features[feature]) + 10
-x = tf.linespace(range_min, range_max, 200)
+x = tf.linspace(range_min, range_max, 200)
 y = single_feature_model.predict(x)
 
 plot(feature, x, y)
@@ -154,3 +164,4 @@ dnn_model = keras.Sequential([
     single_feature_normalizer,
     layers.Dense(1)
 ])
+
