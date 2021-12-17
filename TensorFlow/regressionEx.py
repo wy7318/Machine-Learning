@@ -162,6 +162,46 @@ plot(feature, x, y)
 # DNN
 dnn_model = keras.Sequential([
     single_feature_normalizer,
+    layers.Dense(64, activation='relu'),
+    layers.Dense(64, activation='relu'),
     layers.Dense(1)
 ])
 
+dnn_model.compile(loss=loss,
+                  optimizer=tf.keras.optimizers.Adam(0.001))
+print(dnn_model.summary())
+
+dnn_model.fit(
+    train_features[feature], train_labels,
+    validation_split=0.2,
+    verbose =1, epochs=100
+)
+dnn_model.evaluate(test_features[feature], test_labels, verbose=1)
+
+# Predict and plot
+x = tf.linspace(range_min, range_max, 200)
+y = dnn_model.predict(x)
+plot(feature, x, y)
+
+
+# Multiple inputs
+linear_model = tf.keras.Sequential([
+    normalizer,
+    layers.Dense(units=1)
+])
+
+linear_model.compile(
+    optimizer=tf.optimizers.Adam(learning_rate=0.1),
+    loss=loss
+)
+
+linear_model.fit(
+    train_features, train_labels,
+    epochs=100,
+    verbose=1,
+    validation_split=0.2
+)
+
+linear_model.evaluate(
+    test_features, test_labels, verbose=1
+)
