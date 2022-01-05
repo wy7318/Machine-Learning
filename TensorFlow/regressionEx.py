@@ -181,6 +181,7 @@ dnn_model.evaluate(test_features[feature], test_labels, verbose=1)
 # Predict and plot
 x = tf.linspace(range_min, range_max, 200)
 y = dnn_model.predict(x)
+print("prediction", y)
 plot(feature, x, y)
 
 
